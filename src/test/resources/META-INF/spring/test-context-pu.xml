@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://grails.org/schema/gorm http://grails.org/schema/gorm/gorm.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd">
+
+
+	<!-- Resolves ${...} placeholders -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>application.properties</value>
+		</property>
+	</bean>
+
+	<bean id="datasourceDbUnit"
+		class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+		<constructor-arg>
+			<ref bean="dataSource" />
+		</constructor-arg>
+	</bean>
+
+	<jdbc:embedded-database id="dataSource" type="HSQL">
+		<jdbc:script location="classpath:schema.sql" />
+	</jdbc:embedded-database>
+	
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<constructor-arg ref="dataSource" />
+	</bean>
+
+	<bean id="txTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+		<property name="transactionManager" ref="transactionManager"></property>
+	</bean>
+
+	<!-- Default abstract Ebean Server configuration -->
+	<bean id="defaultEbeanServerConfig" class="com.avaje.ebean.config.ServerConfig"
+		abstract="true">
+		<property name="autofetchConfig">
+			<bean class="com.avaje.ebean.config.AutofetchConfig">
+				<property name="logDirectory" value="target" />
+			</bean>
+		</property>
+		<property name="packages" value="MODEL"/>
+		<!-- turn off all logging by default -->
+		<property name="loggingDirectory" value="target" />
+		<property name="loggingLevel" value="SQL" />
+
+		<property name="externalTransactionManager">
+			<bean
+				class="com.avaje.ebean.springsupport.txn.SpringAwareJdbcTransactionManager" />
+		</property>
+
+		<property name="namingConvention">
+			<bean class="com.avaje.ebean.config.UnderscoreNamingConvention" />
+		</property>
+	</bean>
+	
+	<bean id="scArticulos" parent="defaultEbeanServerConfig">
+		<property name="dataSource" ref="dataSource" />
+		<property name="name" value="ES_ARTICULOS" />
+		<property name="ddlGenerate" value="false" />
+		<property name="ddlRun" value="false" />
+	</bean>
+	
+	<bean id="scClientes" parent="defaultEbeanServerConfig">
+		<property name="dataSource" ref="dataSource" />
+		<property name="name" value="ES_CLIENTES" />
+		<property name="ddlGenerate" value="false" />
+		<property name="ddlRun" value="false" />
+	</bean>
+
+	<bean id="defaultServerConfig" parent="defaultEbeanServerConfig">
+		<property name="dataSource" ref="dataSource" />
+		<property name="name" value="defaultServer" />
+		<property name="ddlGenerate" value="false" />
+		<property name="defaultServer" value="true" />
+		<property name="ddlRun" value="false" />
+	</bean>
+
+	<!-- Ebean Server for PUAlmacen -->
+	<bean id="ES_ARTICULOS"
+		class="com.avaje.ebean.springsupport.factory.EbeanServerFactoryBean">
+		<property name="serverConfig" ref="scArticulos" />
+	</bean>
+	
+	<!-- Ebean Server for PUCliente -->
+	<bean id="ES_CLIENTES"
+		class="com.avaje.ebean.springsupport.factory.EbeanServerFactoryBean">
+		<property name="serverConfig" ref="scClientes" />
+	</bean>
+
+
+	<bean id="defaultServer"
+		class="com.avaje.ebean.springsupport.factory.EbeanServerFactoryBean">
+		<property name="serverConfig" ref="defaultServerConfig" />
+	</bean>
+		
+	<!-- Domain class finder -->
+	<bean id="domainDirectoryImpl"
+		class="es.nortia_in.orm.directory.InlineDomainDirectory">
+		<property name="domainClasses">
+			<list>
+				<value>MODEL.EAlmacen</value>
+				<value>MODEL.ESeccion</value>
+				<value>MODEL.EGoods</value>
+				<value>MODEL.EAlmacenWithPU</value>
+				<value>MODEL.ESeccionWithPU</value>
+				<value>MODEL.EGoodsWithPU</value>
+				<value>MODEL.EClienteWithPU</value>
+				<value>MODEL.EBadWithPU</value>
+				<value>MODEL.EFamilia</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Auto domain class register -->
+	<bean class="es.nortia_in.orm.spring.DomainClassRegisterPostProcessor">
+		<property name="domainDirectory" ref="domainDirectoryImpl" />
+	</bean>
+		
+
+	<bean id="mockService" class="MODEL.MockPersistentService">
+	</bean>
+
+</beans>
