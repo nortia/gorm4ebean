@@ -74,8 +74,8 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 	 * @param clazz the domain class
 	 * @return the created criteria
 	 */
-	protected def doCreateCriteria(Class clazz) {
-		GormLikeMethods.createCriteria(getEbeanServer(clazz), clazz);
+	protected def doCreateQuery(Class clazz) {
+		GormLikeMethods.createQuery(getEbeanServer(clazz), clazz);
 	}
 	
 	/**
@@ -151,8 +151,8 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 		}
 
 		// Create criteria
-		metaClass.static.createCriteria = {
-			doCreateCriteria(clazz)
+		metaClass.static.createQuery = {
+			doCreateQuery(clazz)
 		}
 
 

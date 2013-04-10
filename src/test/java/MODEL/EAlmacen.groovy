@@ -2,6 +2,7 @@ package MODEL
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -26,7 +27,7 @@ class EAlmacen implements Serializable {
 	@Version
 	int version
 	
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	ESeccion seccion
 	
 	void beforeInsert(){

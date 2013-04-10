@@ -143,21 +143,5 @@ public class BasicPropertiesEnhancerTest {
 		
 	}
 	
-	@Test
-	void shouldFailWithNoIdFieldAnnotated() {
-		
-		//Retrieve meta class
-		def clazz = EntityWithNoId.class
-		def metaClass = ClassUtils.getExpandoMetaClass(clazz)
-		assert metaClass
-		
-		//Enhance fails
-		try {
-			enhancer.enhance(metaClass, clazz)
-			fail()
-		} catch (EBeanGormException) {
-		}
-		
-	}
 	
 }

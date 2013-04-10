@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <e_seccion version="0" descripcion="00 - GRAN CONSUMO 1" seccion="1" />
+  <e_seccion version="1" descripcion="00 - GRAN CONSUMO 1" seccion="1" />
   <e_seccion version="0" descripcion="00 - GRAN CONSUMO 2" seccion="2" />
   <e_seccion version="0" descripcion="00 - GRAN CONSUMO 3" seccion="3" />
   <e_almacen dtype="ALMACEN" version="0" seccion_seccion="2" abreviada="1881 VIRGEN B.00" descripcion="ACEITE OLIVA 1881 VIRGEN E.BOT.0.50" codigo_interno="00000002"/>

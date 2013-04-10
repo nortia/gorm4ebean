@@ -139,7 +139,7 @@ class QueryDirectiveMapper {
 		assert field
 
 		//Descendant order by default
-		def method = (order == DESC) ? "desc" : "asc"
+		def method = (DESC.equalsIgnoreCase(order ?: "")) ? "desc" : "asc"
 		assert method
 
 		if(field instanceof List<String>){

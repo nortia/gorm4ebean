@@ -189,7 +189,7 @@ class GormLikeEnhancementsTest  extends AbstractDbUnitTransactionalJUnit4SpringC
 
 	@Test
 	void shouldFindEntityUsingQueryLanguage(){
-		def query = EAlmacen.createCriteria()
+		def query = EAlmacen.createQuery()
 
 		assertNotNull(query)
 

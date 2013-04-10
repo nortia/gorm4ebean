@@ -67,8 +67,9 @@ class BeanLifecycleHook extends BaseHookSupport {
 	   assert bean != null
 	   assert methodName
 	  
-	   def metaClass = bean.metaClass
-	   if (metaClass.respondsTo(bean, methodName)) {
+	   def mc = bean.getMetaClass()
+	   assert mc
+	   if (mc.respondsTo(bean, methodName)) {
 		   bean."$methodName"()
 	   }
 	   

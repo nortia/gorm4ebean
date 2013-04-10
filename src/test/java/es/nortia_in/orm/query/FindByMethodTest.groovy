@@ -92,4 +92,6 @@ class FindByMethodTest  extends AbstractDbUnitTransactionalJUnit4SpringContextTe
 
 		assert (found.codigo_interno != "00000222")
 	}
+	
+	
 }

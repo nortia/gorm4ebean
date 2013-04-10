@@ -6,7 +6,7 @@ package es.nortia_in.orm.gorm.query
  * 
  * These are:
  * 
- * InList - In the list of given values
+	InList - In the list of given values
 	LessThan - less than the given value
 	LessThanEquals - less than or equal a give value
 	GreaterThan - greater than a given value
@@ -17,6 +17,12 @@ package es.nortia_in.orm.gorm.query
 	Between - Between two values (requires two arguments)
 	IsNotNull - Not a null value (doesn't require an argument)
 	IsNull - Is a null value (doesn't require an argument)
+	StartsWith - string property starts with given preffix
+	StartsWithIgnoreCase - string property starts with given preffix (Case insensitive)
+	EndsWith - string property ends with given suffix
+	EndsWithIgnoreCase - string property ends with given suffix (case insensitive)
+	Contains - string property contains given string
+	ContainsIgnoreCase - string property contains given string (case insensitive)
 
  * @author angel
  *
@@ -32,26 +38,40 @@ class Comparators {
 	public static final String ILIKE = "<i>"
 	public static final String NOT_EQUAL = "<ne>"
 	public static final String EQUAL = "<e>"
+	public static final String IEQUAL = "<ie>"
 	public static final String BETWEEN = "<b>"
 	public static final String NOT_NULL = "<nn>"
 	public static final String IS_NULL = "<n>"
+	public static final String ID_EQ = "<id>"
+	public static final String ID_IN = "<idIn>"
+	public static final String STARTS_WITH = "<sw>"
+	public static final String ISTARTS_WITH = "<isw>"
+	public static final String ENDS_WITH = "<ew>"
+	public static final String IENDS_WITH = "<iew>"
+	public static final String CONTAINS = "<c>"
+	public static final String ICONTAINS = "<ic>"
 	
 	public static final def COMPARATORS = [IN_LIST, LESS_THAN, LESS_EQUALS,
-		GREATHER_THAN, GREATHER_EQUALS, LIKE, ILIKE, NOT_EQUAL,  EQUAL, BETWEEN,
-		NOT_NULL, IS_NULL]
+		GREATHER_THAN, GREATHER_EQUALS, LIKE, ILIKE, NOT_EQUAL,  EQUAL, IEQUAL, BETWEEN,
+		NOT_NULL, IS_NULL, STARTS_WITH, ISTARTS_WITH, ENDS_WITH, IENDS_WITH, CONTAINS, ICONTAINS]
 	
-	public static final def UNARY_OPERATORS = [NOT_NULL, IS_NULL]
+	public static final def UNARY_OPERATORS = [NOT_NULL, IS_NULL, ID_EQ, ID_IN]
 	
 	public static final def TRINARY_OPERATORS = [BETWEEN] 
 	
-	public static final def LIST_OPERATORS = [IN_LIST]
+	public static final def LIST_OPERATORS = [IN_LIST, ID_IN]
+	
+	public static final def NO_PROPERTY_OPERATORS = [ID_IN, ID_EQ]
+	
 	
 	/**
 	 * Comparator mapping for query tokens
 	 */
 	public static final def COMPARATOR_TOKEN_MAPPING = ["InList": IN_LIST, "LessThan": LESS_THAN, 
 		"LessEqualsThan": LESS_EQUALS, "GreaterThan":GREATHER_THAN, "GreaterEqualsThan": GREATHER_EQUALS,
-		"Like": LIKE, "Ilike":ILIKE, "Equal":EQUAL, "NotEqual":NOT_EQUAL, "Between":BETWEEN, "IsNotNull":NOT_NULL, "IsNull":IS_NULL]
+		"Like": LIKE, "Ilike":ILIKE, "Equal":EQUAL, "EqualIgnoreCase":IEQUAL, "NotEqual":NOT_EQUAL, "Between":BETWEEN, 
+		"IsNotNull":NOT_NULL, "IsNull":IS_NULL, "StartsWith":STARTS_WITH, "StartsWithIgnoreCase":ISTARTS_WITH, 
+		"EndsWith":ENDS_WITH, "EndsWithIgnoreCase":IENDS_WITH, "Contains":CONTAINS, "ContainsIgnoreCase":ICONTAINS]
 	
 	/**
 	 * Comparator mapping for ebean query methods
@@ -72,6 +92,15 @@ class Comparators {
 		COMPARATOR_METHOD_MAPPING.put(BETWEEN, "between")
 		COMPARATOR_METHOD_MAPPING.put(NOT_NULL, "isNotNull")
 		COMPARATOR_METHOD_MAPPING.put(IS_NULL, "isNull")
+		COMPARATOR_METHOD_MAPPING.put(IEQUAL, "ieq")
+		COMPARATOR_METHOD_MAPPING.put(ID_EQ, "idEq")
+		COMPARATOR_METHOD_MAPPING.put(STARTS_WITH, "startsWith")
+		COMPARATOR_METHOD_MAPPING.put(ISTARTS_WITH, "istartsWith")
+		COMPARATOR_METHOD_MAPPING.put(ENDS_WITH, "endsWith")
+		COMPARATOR_METHOD_MAPPING.put(IENDS_WITH, "iendsWith")
+		COMPARATOR_METHOD_MAPPING.put(CONTAINS, "contains")
+		COMPARATOR_METHOD_MAPPING.put(ICONTAINS, "icontains")
+		COMPARATOR_METHOD_MAPPING.put(ID_IN, "idIn")
 	}
 	
 	

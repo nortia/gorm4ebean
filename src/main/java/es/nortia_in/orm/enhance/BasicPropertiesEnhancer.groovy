@@ -99,13 +99,6 @@ class BasicPropertiesEnhancer implements DomainClassEnhancer{
 		//Find PK field
 		def idField = domainDirectory?.getIdPropertyName(clazz)
 		
-		//Domain classes should have any ID field
-		if (!idField) {
-			def ex = new EBeanGormException("Class $clazz have no filed annotated with @Id. Primery Key is mandatory")
-			log.error "Cannotn enhance $clazz" , ex
-			throw ex
-		}
-
 		//Enhance  Pk properties as read only
 		metaClass.static."$GET_PK_METHOD_NAME" = {idField}
 		metaClass."$GET_PK_METHOD_NAME" = {idField}
@@ -125,7 +118,9 @@ class BasicPropertiesEnhancer implements DomainClassEnhancer{
 
 			//Return value
 			def fieldName = delegate.getClass()."$GET_PK_METHOD_NAME"()
-			assert fieldName
+			if (!fieldName) {
+				return null
+			}
 			return delegate."$fieldName"
 		}
 

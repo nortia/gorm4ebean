@@ -237,7 +237,7 @@ class GormLikeMethodsEnhancerTest  extends AbstractDbUnitTransactionalJUnit4Spri
 
 	@Test
 	void shouldFindEntityUsingQueryLanguage(){
-		def query = EAlmacen.createCriteria()
+		def query = EAlmacen.createQuery()
 
 		assertNotNull(query)
 

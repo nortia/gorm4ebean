@@ -122,7 +122,7 @@ class GormLikeMethods {
 	 * @return Query class for constructing a query using Eban query language
 	 * @See {@link Query}
 	 */
-	static def createCriteria (def server, Class clazz){
+	static def createQuery (def server, Class clazz){
 		assert server
 		assert clazz
 

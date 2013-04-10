@@ -1,6 +1,7 @@
 package MODEL
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -19,7 +20,7 @@ class ESeccion {
 	@Version
 	int version
 
-	@OneToMany(mappedBy = "seccion")
+	@OneToMany(mappedBy = "seccion", fetch=FetchType.LAZY)
 	List<EAlmacen> products = []
 	
 }
