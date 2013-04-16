@@ -83,7 +83,6 @@
 				<value>MODEL.EGoods</value>
 				<value>MODEL.MockCPKEntity</value>
 				<value>MODEL.MockCPKSubEntity</value>
-				<value>es.nortia_in.orm.gorm.AggregatedQuery</value>
 			</list>
 		</property>
 	</bean>

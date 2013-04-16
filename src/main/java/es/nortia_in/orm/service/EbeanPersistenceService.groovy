@@ -49,12 +49,6 @@ public class EbeanPersistenceService implements PersistenceService, BeanFactoryA
 		def result = transactionManagerMap.get(persistenceUnit ?: "")
 		if (!result) {
 			result = doRetrieveTransactionTemplate(persistenceUnit)
-			if (!result) {
-				def ex = new PersistenceException("Cannot find Transaction Manager for $persistenceUnit persistence unit. One of this is beans is undefined: EBean server, EBean server config, datasource, transaction manager or transaction template.")
-				log.error "Cannot execute transaction" , ex
-				throw ex
-			}
-
 			transactionManagerMap.put(persistenceUnit ?: "", result)
 		}
 
@@ -103,49 +97,132 @@ public class EbeanPersistenceService implements PersistenceService, BeanFactoryA
 		if (!txManager) {
 			return null
 		}
-		
+
 		//find transaction template
 		return beanFactory.getBeansOfType(TransactionTemplate.class).values().find{it.transactionManager == txManager}
 	}
+
+
+	/**
+	 * Execute business logic outside any transaction
+	 * @param c the business logic to be executed
+	 * @return the logic result
+	 */
+	protected def executeBusinessLogic(Closure c) {
+
+		assert c != null
+		
+		try{
+			return c.call()
+		}
+		catch(Error error){
+			log.debug "Intercepted error $error.message during transaction execution. Delegating exception treatement upwards"
+			throw error
+		}
+		catch(RuntimeException re){
+			log.debug "Intercepted exception $re.message during transaction execution. Delegating exception treatement upwards"
+			throw re
+		}
+
+	}
+
+	/**
+	 * Exeucte business logic against given EBean Server transaction
+	 * @param server the ebean server for execution
+	 * @param c the business logic
+	 * @return the logic result
+	 */
+	protected def executeLogicIntoServer(def server, Closure c) {
+
+		assert c != null
+		
+		//Execute logic outside server context
+		if (!server) {
+			return executeBusinessLogic(c)
+		}
+
+		//Execute logic inside server context
+		def result 
+		server.execute(new TxRunnable(){
+			void run() {
+				try{
+
+					result = c.call()
+				}
+				catch(Error error){
+					log.debug "Intercepted error $error.message during transaction execution. Delegating exception treatement upwards"
+					throw error
+				}
+				catch(RuntimeException re){
+					log.debug "Intercepted exception $re.message during transaction execution. Delegating exception treatement upwards"
+					throw re
+				}
+			};
+		})
+		
+		return result
+	}
+
+	/**
+	 * Execute business logic inside a transaction
+	 * @param transactionTemplate the transaction template for transaction management
+	 * @param c the business logic to be executed
+	 * @return the logic result
+	 */
+	protected def executeInTransaction(def transactionTemplate, Closure c) {
+		
+		assert c != null
+		
+		//If no template defined...execute outside transaction
+		if (!transactionTemplate) {
+			return c.call()
+		}
+		
+		//Execute inside transaction
+		def result
+		return transactionTemplate.execute ({
+			result = c.call()
+		} as TransactionCallback)
+
+		return result
+	}
 	
-	
+	/**
+	 * Retrieve the EBean server to be used to execute transactions against given persistenceUnit
+	 * @param persistenceUnit the persistence unit name
+	 * @return the bean server or null if no server should be used
+	 */
+	protected def retrieveEBeanServer(String persistenceUnit) {
+		
+		
+		def server 
+		try {
+			server = Ebean.getServer(persistenceUnit)
+		} catch (e) {
+			log.error "Cannot find server for $persistenceUnit", e
+		}	
+			
+		if (!server) {
+			def ex = new PersistenceException("Cannot find Ebean server for $persistenceUnit persistence unit")
+			log.error "Cannot execute transaction" , ex
+			throw ex
+		}
+		
+		return server
+		
+	}
 
 	@Override
 	public Object doInTransaction(String persistenceUnit, Closure c) {
 
 		//Retrieve transaction template
 		def transactionTemplate = retrieveTransactionTemplate(persistenceUnit)
-		assert transactionTemplate
 		
 		//Find server
-		def server = Ebean.getServer(persistenceUnit)
-		if (!server) {
-			def ex = new PersistenceException("Cannot find Ebean server for $persistenceUnit persistence unit")
-			log.error "Cannot execute transaction" , ex
-			throw ex
-		}
-
-		def result
-		return transactionTemplate.execute ({
-			server.execute(new TxRunnable(){
-						void run() {
-							try{
-
-								result = c.call()
-							}
-							catch(Error error){
-								log.debug "Intercepted error $error.message during transaction execution. Delegating exception treatement upwards"
-								throw error
-							}
-							catch(RuntimeException re){
-								log.debug "Intercepted exception $re.message during transaction execution. Delegating exception treatement upwards"
-								throw re
-							}
-						};
-					})
-		} as TransactionCallback)
+		def server = retrieveEBeanServer(persistenceUnit)
 		
-		return result
+		//Execute logic
+		return executeInTransaction(transactionTemplate, {executeLogicIntoServer(server, c)})
 	}
 
 	@Override
