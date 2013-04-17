@@ -46,41 +46,26 @@ class GormLikeCriteria {
 	 * The stack for object graph navigation
 	 */
 	Stack navigationPath = []
+	
+	/**
+	 * The EBean Server for query execution
+	 */
+	EbeanServer server;
 
 	/**
 	 * 
 	 * @param domainClass the domain class to be queried
 	 */
-	GormLikeCriteria(Class domainClass) {
+	GormLikeCriteria(Class domainClass, EbeanServer server) {
 		super()
-		this.domainClass = domainClass
-	}
-
-	/**
-	 * Retrieve EBean server for a given domain class
-	 * @param domainClass the domain class whose server are wanted to be retrieved 
-	 * @return the ebean server
-	 */
-	protected getEbeanServer(Class domainClass) {
+				
 		assert domainClass
-
-		String persistenceUnit = null
-
-		//Retrieve persistence uni
-		try {
-			persistenceUnit = domainClass.getPersistenceUnit()
-		} catch (MissingPropertyException ex) {
-			log.warn "Persistence unit property not enhanced insice $domainClass class"
-		}
-
-
-		def ebeanServer = Ebean.getServer(persistenceUnit)
-		if (!ebeanServer) {
-			throw new EBeanGormException("Not ${persistenceUnit} EbeanServer found")
-		}
-
-		return ebeanServer
+		this.domainClass = domainClass
+		
+		assert server
+		this.server = server
 	}
+
 
 	/**
 	 * Factory method for query creation
@@ -88,9 +73,6 @@ class GormLikeCriteria {
 	 */
 	protected def createQuery() {
 		assert domainClass
-
-		//Retrieve ebean server
-		EbeanServer server = getEbeanServer(domainClass)
 		assert server
 
 		//Create the query

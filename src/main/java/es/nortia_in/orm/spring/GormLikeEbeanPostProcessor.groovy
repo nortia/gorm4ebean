@@ -161,6 +161,35 @@ class GormLikeEbeanPostProcessor implements BeanPostProcessor, ApplicationContex
 		return domainDirectory
 		
 	}
+	
+	/**
+	 * Enhance a given class. This method is intended to be used solely for testing pruporses
+	 * @param clazz the class to be enhanced
+	 */
+	void enhanceClass(Class clazz) {
+		assert clazz
+		
+		//Retrieve meta class
+		def mc = clazz.metaClass
+		
+		//Enhance transient methods
+		def transientEnhancers = createTransientEnhancers(domainDirectory)
+		transientEnhancers.each {
+			it.enhance(mc, clazz)
+		}
+		
+		//If entity is not persistent do not enhance as persistent
+		if (!clazz.getAnnotation(Entity)) {
+			return
+		}
+		
+		//Enhance persistent
+		def persistentEnhancers = createPersistentEnhancers(domainDirectory)
+		persistentEnhancers.each {
+			it.enhance(mc, clazz)
+		}
+		
+	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)

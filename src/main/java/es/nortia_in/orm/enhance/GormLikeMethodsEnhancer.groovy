@@ -6,6 +6,7 @@ import com.avaje.ebean.EbeanServer
 import es.nortia_in.orm.directory.DomainDirectory;
 import es.nortia_in.orm.gorm.EBeanGormException;
 import es.nortia_in.orm.gorm.GormLikeMethods
+import es.nortia_in.orm.gorm.query.GormLikeCriteria;
 import groovy.lang.MetaClass;
 
 /**
@@ -79,6 +80,15 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 	}
 	
 	/**
+	 * Template method to create a {@link GormLikeCriteria} over given domain clas 
+	 * @param clazz the domain class for criteria creation
+	 * @return the created criteria
+	 */
+	protected def doCreateCriteria(Class clazz) {
+		return new GormLikeCriteria(clazz, getEbeanServer(clazz))
+	}
+	
+	/**
 	 * Template method to execute any given dynamic query method such as findAllByXXX or findByXX
 	 * @param clazz the domain class to be queried
 	 * @param methodName the dynamic method name
@@ -88,6 +98,9 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 	protected def doDynamicMethod(Class clazz, String methodName, Object args) {
 		GormLikeMethods.dynamicMethod(getEbeanServer(clazz), clazz, methodName, args)
 	}
+	
+	
+	
 	
 	/**
 	* Returns the EbeanServer corresponding to persistence unit of class. If
@@ -150,11 +163,15 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 			doCount(clazz)
 		}
 
-		// Create criteria
+		// Create ebean query
 		metaClass.static.createQuery = {
 			doCreateQuery(clazz)
 		}
 
+		//Create criteria
+		metaClass.static.createCriteria = {
+			doCreateCriteria(clazz)
+		}
 
 		//Any other dynamic method
 		metaClass.static.methodMissing = {methodName, args ->

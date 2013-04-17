@@ -35,7 +35,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQuerySimpleEquality() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 		
 		def result = criteria.list{ eq "codigo_interno", "00000002" }
 		assertEquals 1, result.size()
@@ -44,7 +44,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryDisjunction() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 
 		def result = criteria.list {
 			or {
@@ -59,7 +59,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryDisjunctionNested() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 		
 		def result = criteria.list{
 			or {
@@ -74,7 +74,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryDisjunctionNested2() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 
 		def result = criteria.list{
 			or {
@@ -91,7 +91,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryBetween() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 
 		def result = criteria.list{ between "codigo_interno", "00000002", "00000022" }
 		assertEquals 2, result.size()
@@ -100,7 +100,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryIn() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 	
 		def result = criteria.list{
 			'in'("codigo_interno", ["00000002", "00000022"])
@@ -113,7 +113,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryIdIn() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 		
 		def result = criteria.list {
 			idIn(["00000002", "00000022"])
@@ -124,7 +124,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryLimitSort() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 		
 		def result = criteria.list{
 			like "abreviada", "%VIRGEN%"
@@ -139,7 +139,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryLimitSortOffset() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 		
 		def result = criteria.list {
 			like "abreviada", "%VIRGEN%"
@@ -155,7 +155,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryNestedObject() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 		
 		def result = criteria.list {
 			seccion { like "descripcion", "%GRAN CONSUMO%" }
@@ -168,7 +168,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	void shouldQuertEqualsIgnoreCase() {
 
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 		
 
 		def result = criteria.list{
@@ -181,7 +181,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	void shouldQueryEqualsProperty() {
 
 
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 	
 		def result = criteria.list{ eqProperty "version", "seccion" }
 		assertEquals 1, result.size()
@@ -191,7 +191,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	void shouldQueryNotEqualsProperty() {
 
 
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 
 		def result = criteria.list{ neProperty "version", "seccion" }
 		assertEquals 2, result.size()
@@ -202,7 +202,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	void shouldQueryEmptyRelation() {
 
 
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 		
 		def result = criteria.list { isEmpty "products" }
 		assertEquals 2, result.size()
@@ -214,7 +214,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	void shouldQueryNotEmptyRelation() {
 
 
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 		
 		def result = criteria.list{ isNotEmpty "products" }
 		assertEquals 1, result.size()
@@ -226,7 +226,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	void shouldQuertEqualsId() {
 
 
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 
 		def result = criteria.list { idEq "00000222" }
 		assertEquals 1, result.size()
@@ -237,13 +237,13 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 
 	@Test(expected=UnsupportedOperationException)
 	void shouldSizeOperatorsNotSupported() {
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 		criteria.list { sizeEq "products", 10 }
 	}
 
 	@Test
 	void shouldApplySqlRestriction() {
-		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 		
 		def result = criteria.list { sqlRestriction "seccion.seccion = 2" }
 		assertEquals 3, result.size()
@@ -252,7 +252,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryWithNotOperator() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 		
 		def result = criteria.list {
 			not { eqProperty "version", "seccion" }
@@ -263,7 +263,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	@Test
 	void shouldQueryEmptyCriteria() {
 
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 
 		def result = criteria.list()
 		assertEquals 3, result.size()
@@ -271,7 +271,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	
 	@Test
 	void shouldGetUniqueEntity() {
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 		
 		assertEquals 1, criteria.get {
 			eq "version", 1
@@ -281,7 +281,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	
 	@Test(expected=PersistenceException)
 	void shouldFailWithGettingManyEntities() {
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 		
 		criteria.get{
 			eq "version", 0
@@ -290,7 +290,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	
 	@Test(expected=UnsupportedOperationException)
 	void shouldFailScrollNotSupported() {
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 		
 		criteria.scroll{
 			products {
@@ -301,7 +301,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	
 	@Test
 	void shouldRetrievePagingList() {
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 		
 		def result = criteria.list([pageSize:10],  {
 			products {
@@ -313,7 +313,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	
 	@Test(expected=UnsupportedOperationException)
 	void shouldProjectionsNotSupported() {
-		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion)
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 		
 		def result = criteria.list([pageSize:10],  {
 			projections {
@@ -321,4 +321,5 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 			}
 		})
 	}
+	
 }

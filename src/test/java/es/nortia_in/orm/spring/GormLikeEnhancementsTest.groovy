@@ -6,16 +6,19 @@ import javax.persistence.PersistenceException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.avaje.ebean.config.ServerConfig;
 
+import es.nortia_in.orm.gorm.query.GormLikeCriteria;
 import es.nortia_in.test.db.AbstractDbUnitTransactionalJUnit4SpringContextTests
 import es.nortia_in.test.db.DatasetLocation
 
 import MODEL.EAlmacen;
+import MODEL.EFamilia;
 import MODEL.EGoods;
 import MODEL.ESeccion;
 
@@ -25,7 +28,25 @@ import MODEL.ESeccion;
 @DirtiesContext
 class GormLikeEnhancementsTest  extends AbstractDbUnitTransactionalJUnit4SpringContextTests{
 
+	@Autowired
+	GormLikeEbeanPostProcessor postProcessor;
 
+	@Test
+	void shouldDirectEnhanceClass() {
+		
+		assert postProcessor
+		
+		//Enhance a not defined in domain directory class
+		postProcessor.enhanceClass(EFamilia)
+		
+		def entity = new EFamilia()
+		
+		//Familia now has enhanced methods
+		assert entity.respondsTo("getId", [])
+		assert entity.respondsTo("save", []) 
+		
+	}
+	
 	@Test
 	void shouldFindMethod() {
 
@@ -225,5 +246,21 @@ class GormLikeEnhancementsTest  extends AbstractDbUnitTransactionalJUnit4SpringC
 		
 		//Should not fail
 		assertNull EAlmacen.get(entity.id)
+	}
+	
+	@Test
+	void shouldCreateAndExecuteCriteria() {
+		
+		def criteria = EAlmacen.createCriteria()
+		
+		assertNotNull criteria
+		assertTrue criteria instanceof GormLikeCriteria
+		
+		def entity = criteria.get {
+			eq "codigo_interno", "00000222"
+		}
+		
+		assertNotNull entity
+		assertEquals "00000222", entity.codigo_interno
 	}
 }

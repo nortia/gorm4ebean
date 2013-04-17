@@ -1,6 +1,9 @@
 package es.nortia_in.orm.spring
 
 
+
+import java.lang.reflect.ParameterizedType;
+
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanPostProcessor
 
 import com.avaje.ebean.config.ServerConfig
+import com.avaje.ebean.event.BeanPersistListener
 
 import es.nortia_in.orm.annotations.DomainAnnotationsProcessor
 import es.nortia_in.orm.annotations.TransientEntity
@@ -39,7 +43,7 @@ class DomainClassRegisterPostProcessor implements BeanPostProcessor, BeanFactory
 	 * The spring bean factory
 	 */
 	BeanFactory beanFactory;
-	
+
 	/**
 	 * The @Domain annotations processor
 	 */
@@ -54,20 +58,20 @@ class DomainClassRegisterPostProcessor implements BeanPostProcessor, BeanFactory
 	protected Class registerClassInServer(ServerConfig serverConfig, Class clazz) {
 		assert serverConfig
 		assert clazz
-		
+
 		// Check if persistence unit of entity is equals to name of serverConfig
 		if (!classBelongsToServerConfig(clazz,serverConfig)) {
 			return null
 		}
- 
+
 		//Check @Domain annotations
 		annotationsProcessor.checkAnnotations(clazz)
-		
+
 		//Register class
 		serverConfig.addClass(clazz)
 		return clazz
 	}
-	
+
 	/**
 	 * Utility method to register domain class inside given ebean server config
 	 * @param serverConfig the server config for class registering
@@ -78,38 +82,38 @@ class DomainClassRegisterPostProcessor implements BeanPostProcessor, BeanFactory
 
 		assert serverConfig
 
-		
+
 		//Only register @Entity classes
 		if (!domainClass.isAnnotationPresent(Entity.class)){
-			
+
 			//Transient entities are validated but not registered
 			if (domainClass.isAnnotationPresent(TransientEntity)) {
 				annotationsProcessor.checkAnnotations(domainClass)
 			}
-			
+
 			return null
 		}
 
 		return registerClassInServer(serverConfig, domainClass)
 	}
-	
+
 	/**
-	* Utility method to register embeddable classes inside given ebean server config
-	* @param serverConfig the server config for class registering
-	* @param clazz the embeddable class to be registered
-	* @return the registered class or null if class cannot be registered
-	*/
-   protected Class registerEmbeddableClass(ServerConfig serverConfig, Class clazz) {
+	 * Utility method to register embeddable classes inside given ebean server config
+	 * @param serverConfig the server config for class registering
+	 * @param clazz the embeddable class to be registered
+	 * @return the registered class or null if class cannot be registered
+	 */
+	protected Class registerEmbeddableClass(ServerConfig serverConfig, Class clazz) {
 
-	   assert serverConfig
+		assert serverConfig
 
-	   //Only register @Embeddable classes
-	   if (!clazz.isAnnotationPresent(Embeddable.class)){
-		   return null
-	   }
+		//Only register @Embeddable classes
+		if (!clazz.isAnnotationPresent(Embeddable.class)){
+			return null
+		}
 
-	   return registerClassInServer(serverConfig, clazz)
-   }
+		return registerClassInServer(serverConfig, clazz)
+	}
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
@@ -149,6 +153,27 @@ class DomainClassRegisterPostProcessor implements BeanPostProcessor, BeanFactory
 		assert serverConfig
 
 		def listeners = domainDirectory?.getPersistListeners()
+
+		listeners = listeners.findAll {
+			def interfaces = it.getGenericInterfaces()
+			return interfaces.find {iface ->
+
+				if (iface instanceof ParameterizedType) {
+
+					//Ignore not persist listeners
+					if (!BeanPersistListener.class.isAssignableFrom(iface.getRawType())) {
+						return false
+					}
+
+					//Register only the listeners attached to server registered entities
+					def arg = iface.getActualTypeArguments()[0] 
+					return arg in serverConfig.classes
+				}
+
+				return false
+			}
+		}
+
 		listeners?.each {
 
 			//Search in bean factory all beans with the given persist listener class

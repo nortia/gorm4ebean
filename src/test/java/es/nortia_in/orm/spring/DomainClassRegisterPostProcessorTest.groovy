@@ -80,16 +80,21 @@ public class DomainClassRegisterPostProcessorTest {
 	@Test
 	public void shouldRegisterListeners() {
 		
-		//Listeners have been injected in every server
-		[scClientes, scArticulos, defaultServer].each {server ->
-			def listeners = server.persistListeners
-			
-			//There are 2 registered persist listeners
-			assertEquals 2, listeners.size()
-			
-			//one of them is autowired persistListener
-			assertTrue persistListener in listeners
-		}
+		//ScClientes has no listeners
+		def listeners = scClientes.persistListeners
+		assertEquals 0, listeners.size()
+		
+		//scArticulos has no listeners
+		listeners = scArticulos.persistListeners
+		assertEquals 0, listeners.size()
+		
+		
+		//Default server has 2 listeners
+		listeners = defaultServer.persistListeners
+		assertEquals 2, listeners.size()
+		
+		//one of them is autowired persistListener
+		assertTrue persistListener in listeners
 		
 	}
 }
