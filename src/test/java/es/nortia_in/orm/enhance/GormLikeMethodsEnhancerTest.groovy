@@ -276,4 +276,52 @@ class GormLikeMethodsEnhancerTest  extends AbstractDbUnitTransactionalJUnit4Spri
 		//Should not fail
 		assertNull EAlmacen.get(entity.codigo_interno)
 	}
+	
+	@Test
+	void shouldCheckDirityEntities() {
+		
+		//Retrieve a seccion
+		def seccion = ESeccion.get(2)
+		assert seccion
+		
+		def oldDescription = seccion.descripcion
+		
+		//Seccion is not dirty
+		assertFalse seccion.isDirty()
+		
+		//Update description
+		seccion.descripcion = "FOO"
+		
+		//Now is dirty
+		assertTrue seccion.isDirty()
+		
+		//Check previous value
+		assertEquals oldDescription, seccion.getPersistentValue("descripcion")
+	}
+	
+	@Test
+	void shouldDirtyNewEntities() {
+		
+		def seccion = new ESeccion()
+		assertTrue seccion.isDirty()
+	}
+	
+	@Test
+	void shouldGetDirtyPropertyNames() {
+		
+		//Retrieve a seccion
+		def seccion = ESeccion.get(2)
+		assert seccion
+		
+		//Seccion has no dirty properties
+		assert !seccion.getDirtyPropertyNames()
+		
+		
+		//Update description
+		seccion.descripcion = "FOO"
+		
+		//Now is dirty
+		assertEquals(["descripcion"] as Set, seccion.getDirtyPropertyNames())
+		assertTrue seccion.isDirty("descripcion")
+	}
 }

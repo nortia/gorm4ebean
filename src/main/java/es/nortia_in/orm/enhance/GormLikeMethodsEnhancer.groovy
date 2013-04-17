@@ -80,7 +80,7 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 	}
 	
 	/**
-	 * Template method to create a {@link GormLikeCriteria} over given domain clas 
+	 * Template method to create a {@link GormLikeCriteria} over given domain class
 	 * @param clazz the domain class for criteria creation
 	 * @return the created criteria
 	 */
@@ -100,8 +100,40 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 	}
 	
 	
+	/**
+	 * Template method to execute isDirty() Gorm-like method over given entity
+	 * @param object the entity to be checked
+	 * @return true if entity is dirty, false otherwise
+	 */
+	protected boolean doIsDirty(Object object, String propertyName) {
+		
+		if (!propertyName) {
+			return GormLikeMethods.isDirty(object)
+		}
+		
+		return GormLikeMethods.isDirtyProperty(object, propertyName)
+	}
+	
+	/**
+	 * Template method to execute getDirtyPropertyNames() GORM-like method over given entity
+	 * @param object the entity to be checked
+	 * @return the dirty properties collection
+	 */
+	protected def doGetDirtyPropertyNames(Object object) {
+		GormLikeMethods.getDirtyPropertyNames(object)
+	}
 	
 	
+	/**
+	 * Template method to execute getPersistentValue() GORM-like method over given entity.
+	 * Retrieves old property value if  was changed
+	 * @param object the entity whose old property value is wanted
+	 * @param propertyName the property name to be retrieved
+	 * @return the persisted value in database or null if is not dirty
+	 */
+	protected def doGetPersistentValue(Object object, String propertyName) {
+		GormLikeMethods.getPersistentValue(object, propertyName)
+	}
 	/**
 	* Returns the EbeanServer corresponding to persistence unit of class. If
 	* the class has <code>null</code> as persistence unit property, returns
@@ -173,11 +205,27 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 			doCreateCriteria(clazz)
 		}
 
+		//isDirty
+		metaClass.isDirty = {prop->
+			doIsDirty(delegate, prop)
+		}
+		
+		//getDirtyPropertyNames
+		metaClass.getDirtyPropertyNames = {
+			doGetDirtyPropertyNames(delegate)
+		}
+		
+		//getPersistentValue
+		metaClass.getPersistentValue = {prop ->
+			doGetPersistentValue(delegate, prop)
+		}
+		
 		//Any other dynamic method
 		metaClass.static.methodMissing = {methodName, args ->
 			doDynamicMethod(clazz, methodName, args)
 		}
 		
 	}
+	
 
 }

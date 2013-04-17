@@ -3,12 +3,12 @@ package es.nortia_in.orm.gorm
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import com.avaje.ebean.bean.EntityBean;
+
 import es.nortia_in.orm.gorm.query.FindAllByMethod
 import es.nortia_in.orm.gorm.query.FindByMethod
 import es.nortia_in.orm.gorm.query.FindPagedByMethod
 import es.nortia_in.orm.gorm.query.QueryDirectiveMapper
-
-
 
 
 
@@ -163,4 +163,71 @@ class GormLikeMethods {
 		return method.execute(server, clazz, methodName, arguments as List)
 	}
 
+	/**
+	 * Gorm-like isDirty() method. Check if given entity is dirty
+	 * @param object the object to be checked
+	 * @return true if object is a dirty entity, false otherwise
+	 */
+	static boolean isDirty(def object) {
+		
+		assert object
+		
+		//Not entities are ever dirties
+		if (!(object instanceof EntityBean)){
+			return true
+		}
+		
+		return object._ebean_getIntercept()?.isNewOrDirty()
+	}
+	
+	/**
+	* Gorm-like isDirty(String propertyName) method. Check if given entity's property is dirty
+	* @param object the object to be checked
+	* @param propertyName the property to be checked
+	* @return true if property is dirty, false otherwise
+	*/
+   static boolean isDirtyProperty(def object, String propertyName) {
+	   
+	   assert object
+	   return propertyName in getDirtyPropertyNames(object)
+   }
+	
+	/**
+	 * Gorm-like getDirtyPropertyNames() method. Retrieve all entity updated properties
+	 * @param object the entity to be checked
+	 * @return the collection of dirty property names
+	 */
+	static Set<String> getDirtyPropertyNames(def object) {
+		
+		assert object
+		
+		if (!(object instanceof EntityBean)) {
+			return []
+		}
+		
+		return object._ebean_getIntercept()?.getChangedProps() ?: []
+		
+	}
+	
+	/**
+	 * Gorm-like getPersistentValue() method. Retrieve the persistent value of a given property.
+	 * @param object the entity whose persistent value should be recovered
+	 * @param propertyName the property name to be recovered
+	 * @return the property's persistent value
+	 */
+	static def getPersistentValue(def object, String propertyName) {
+		
+		assert object
+		
+		if (!propertyName) {
+			return null
+		}
+		
+		if (!(object instanceof EntityBean)) {
+			return null
+		}
+		
+		return object._ebean_getIntercept()?.getOldValues()?."$propertyName"
+		
+	}
 }
