@@ -23,6 +23,7 @@ import com.avaje.ebean.EbeanServer;
 
 import es.nortia_in.orm.directory.DomainDirectory;
 import es.nortia_in.orm.gorm.EBeanGormException
+import es.nortia_in.orm.gorm.query.GormLikeCriteria
 import es.nortia_in.test.db.AbstractDbUnitTransactionalJUnit4SpringContextTests;
 import es.nortia_in.test.db.DatasetLocation
 
@@ -323,5 +324,36 @@ class GormLikeMethodsEnhancerTest  extends AbstractDbUnitTransactionalJUnit4Spri
 		//Now is dirty
 		assertEquals(["descripcion"] as Set, seccion.getDirtyPropertyNames())
 		assertTrue seccion.isDirty("descripcion")
+	}
+	
+	@Test
+	void shouldCreateCriteria() {
+		
+		def criteria = EAlmacen.createCriteria()
+		assert criteria
+		assert criteria instanceof GormLikeCriteria
+		
+		def result = criteria.list {
+			or {
+				eq "codigo_interno", "00000002"
+				eq "codigo_interno", "00000022"
+			}
+		}
+		
+		assertEquals 2, result.size()
+	}
+	
+	@Test
+	void shouldInjectWithCriteria() {
+		
+		
+		def result = EAlmacen.withCriteria {
+			or {
+				eq "codigo_interno", "00000002"
+				eq "codigo_interno", "00000022"
+			}
+		}
+		
+		assertEquals 2, result.size()
 	}
 }

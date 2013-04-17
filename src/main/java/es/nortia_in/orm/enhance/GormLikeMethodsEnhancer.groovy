@@ -89,6 +89,20 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 	}
 	
 	/**
+	 * Template method to execute a GORM-Like withCriteria method.
+	 * @param clazz the domain class for criteria creation
+	 * @param c the criteria definition
+	 * @return the criteria result
+	 */
+	protected def doWithCriteria(Class clazz, Closure c) {
+		def criteria = doCreateCriteria(clazz)
+		assert criteria
+		
+		//Execute the criteria
+		return criteria.list(c)
+	}
+	
+	/**
 	 * Template method to execute any given dynamic query method such as findAllByXXX or findByXX
 	 * @param clazz the domain class to be queried
 	 * @param methodName the dynamic method name
@@ -203,6 +217,11 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 		//Create criteria
 		metaClass.static.createCriteria = {
 			doCreateCriteria(clazz)
+		}
+		
+		//With criteria
+		metaClass.static.withCriteria = {closure ->
+			doWithCriteria(clazz, closure)
 		}
 
 		//isDirty
