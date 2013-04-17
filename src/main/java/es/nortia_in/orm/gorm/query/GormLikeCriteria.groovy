@@ -4,6 +4,7 @@ import com.avaje.ebean.Ebean
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.Expression;
+import com.avaje.ebean.FetchConfig;
 
 import es.nortia_in.orm.gorm.EBeanGormException;
 import groovy.util.logging.Slf4j;
@@ -228,6 +229,23 @@ class GormLikeCriteria {
 		return q.findUnique()
 	}
 
+	/**
+	 * Gorm-like fetchMode method. Configure fetch mode for each association
+	 * @param path the accociation path to be configured
+	 * @param mode the fetch mode to be used
+	 */
+	protected def fetchMode(String path, FetchConfig mode){
+		query = query.fetch(path, mode)
+	}
+	
+	/**
+	 * Gorm-like join method. Tell a join over configured associated property 
+	 * @param path the association to be joined
+	 */
+	protected def join(String path) {
+		query = query.fetch(path)
+	}
+	
 	/**
 	 * Gorm-like projections method. Projections are still not supported
 	 * @param c the builder closure

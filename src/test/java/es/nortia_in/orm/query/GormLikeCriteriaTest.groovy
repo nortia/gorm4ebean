@@ -2,7 +2,6 @@ package es.nortia_in.orm.query;
 
 import static org.junit.Assert.*;
 
-import java.sql.ResultSet;
 
 import javax.persistence.PersistenceException;
 
@@ -15,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.FetchConfig
 import com.avaje.ebean.PagingList;
 
 import es.nortia_in.orm.gorm.query.GormLikeCriteria;
@@ -322,4 +322,28 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 		})
 	}
 	
+	@Test
+	void shouldConfigureFetchModeToQueryAllProducts() {
+		
+		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
+		def result = criteria.get {
+			eq "seccion", 2
+			fetchMode("products", new FetchConfig().query())
+		}
+		
+		//XXX Don't know how to assert eager loading
+	}
+	
+	
+	@Test
+	void shouldConfigureJoinToRetrieveSection() {
+		
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
+		def result = criteria.get {
+			eq "codigo_interno", "00000222"
+			join("seccion")
+		}
+		
+		//XXX Don't know how to assert eager loading
+	}
 }
