@@ -1,14 +1,14 @@
 Gorm4Ebean
 ==========
 
-GORM-like library for EBean ORM.
+GORM-like library for [EBean ORM](http://www.avaje.org).
 
 gorm4ebean enhances EBean entity domain classes with GORM-like methods such as save(), delete(), list(), etc.
 
-As original Grails GORM, gorm4ebean uses Spring Framework and, of course, Groovy and EBean ORM (with ebean-spring module).
+As original [Grails GORM](http://grails.org/doc/latest/guide/GORM.html), gorm4ebean uses [Spring Framework](http://www.springsource.org) and, of course, [Groovy](http://groovy.codehaus.org/)  and EBean ORM (with ebean-spring module).
 
-Very quick a simple code examples are:
---------------------------------------
+Very quick and simple code examples are:
+----------------------------------------
 
 * CRUD related methods like create(), delete(), save(), get() or list():
 
@@ -32,7 +32,7 @@ Very quick a simple code examples are:
 		Book.findAllByNameOrPagesGreaterThan("quixote", 1221)
 		Book.findAllByNameInListOrPagesBetween(["quixote","riconete"], 1221, 1331)
 		
-* Criterias:
+* Criteria:
 
 		def quixote = Book.createCriteria().get {
 			eq "name", "quixote"
