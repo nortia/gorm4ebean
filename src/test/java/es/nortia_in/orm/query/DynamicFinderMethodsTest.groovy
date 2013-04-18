@@ -104,6 +104,19 @@ class DynamicFinderMethodsTest {
 	}
 	
 	@Test
+	void shouldTokenizeOneTokenWithGTOperator() {
+
+		assert findByMethod
+
+		def tokens = "AgeGreaterThan"
+		tokens = findByMethod.tokenize(tokens)
+		tokens = findByMethod.processParameters(tokens, [15])
+		
+		def expectedTokens = [new ComparationToken(fieldName:"Age", value:15, operator:Comparators.GREATHER_THAN)]
+		assertEquals expectedTokens, tokens
+	}
+	
+	@Test
 	void shouldTokenizeSomeTokens() {
 
 		assert findByMethod
