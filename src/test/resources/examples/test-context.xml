@@ -72,6 +72,8 @@
 		<property name="serverConfig" ref="serverConfig" />
 	</bean>
 
+	<bean id="bookStoreService" class="examples.BookStoreService"/>
+
 	<bean id="serviceLocator" class="es.nortia_in.orm.service.BeanFactoryServiceLocator" />
 
 	<!-- Domain class finder -->
@@ -86,7 +88,7 @@
 
 	<!-- Gorm-like class enhancer -->
 	<bean class="es.nortia_in.orm.spring.GormLikeEbeanPostProcessor">
-<!-- 		<property name="serviceLocator" ref="serviceLocator" /> -->
+ 		<property name="serviceLocator" ref="serviceLocator" /> 
 		<property name="domainDirectory" ref="domainDirectoryImpl" />
 	</bean>
 

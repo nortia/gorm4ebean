@@ -67,3 +67,7 @@ Documentation
 -------------
 
 * [Quick start](docs/SpringQuickStart.md) guide using Spring beans
+
+* [Service injection](docs/ServiceInjection.md) into domain classes.
+
+* [Unsupported](docs/UsupportedGormFeatures.md) GORM 2.0 features

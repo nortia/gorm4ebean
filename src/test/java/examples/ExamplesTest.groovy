@@ -3,25 +3,18 @@ package examples;
 import static org.junit.Assert.*;
 
 
-import javax.persistence.PersistenceException;
 
-import org.junit.Ignore;
 import org.junit.Test
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.FetchConfig
-import com.avaje.ebean.PagingList;
+import com.avaje.ebean.RawSql
+import com.avaje.ebean.RawSqlBuilder
 
-import es.nortia_in.orm.gorm.query.GormLikeCriteria;
 import es.nortia_in.test.db.AbstractDbUnitTransactionalJUnit4SpringContextTests;
 import es.nortia_in.test.db.DatasetLocation
-import MODEL.EAlmacen;
-import MODEL.ESeccion;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DatasetLocation(value="examples/dataset.xml")
@@ -85,5 +78,24 @@ class ExamplesTest  extends AbstractDbUnitTransactionalJUnit4SpringContextTests 
 			order("pages", "DESC")
 			maxResults(1)
 		}
+	}
+	
+	@Test
+	void createQuery() {
+				
+		RawSql rawSql = RawSqlBuilder.parse("select count(*) as result from book join author on author.name = author_name").create()
+		def query = BookAggregation.createQuery()
+		query.setRawSql(rawSql).where().eq("author.name", "Cervantes")
+		
+		int cervantesBooks = query.findUnique().result
+		
+	}
+	
+	@Test
+	void testService() {
+		
+		def service = Book.getService("bookStoreService")
+		service.store(Book.get("quixote"))
+		
 	}
 }

@@ -92,9 +92,9 @@ Example files
 * Complete Spring Beans XML File. [test-context.xml](/src/test/resources/examples/test-context.xml)
 * Spring Application Context load [example](/src/test/java/examples/ProgramaticallyLoadTest.groovy).
 * Several GORM [examples](/src/test/java/examples/ExamplesTest.groovy).
-* Domain entities: [Book](/src/test/java/examples/Book.groovy) and [Author](src/test/java/examples/Book.groovy) 
+* Domain entities: [Book](/src/test/java/examples/Book.groovy) and [Author](/src/test/java/examples/Book.groovy) 
 
- <a id="callouts>Callouts</a>
+Callouts
  ----------------------------
- * [1] - Define a base package for your domain stuff is always recomended to avoid performance issues 
+ * [1] - Define a base package for your domain stuff is always recommended to avoid performance issues 
  
