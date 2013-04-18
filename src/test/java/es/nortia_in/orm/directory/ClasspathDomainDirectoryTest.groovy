@@ -60,4 +60,18 @@ public class ClasspathDomainDirectoryTest {
 		assertEquals 2, classes.size()
 	}
 	
+	@Test
+	public void shouldFindClassesWithNoBasePackage() {
+		
+		//Create domain directory with no base package defined
+		def domainDirectory = new ClasspathDomainDirectory()
+		
+		//Find all domain classes
+		def classes = domainDirectory.getDomainClasses()
+		
+		//There are 12 Entities in MODEL, 2 in example and 1 TransientEntity
+		assertEquals 15, classes.size()
+		
+	}
+	
 }

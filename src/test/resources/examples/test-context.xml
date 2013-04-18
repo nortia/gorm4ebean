@@ -75,15 +75,9 @@
 	<bean id="serviceLocator" class="es.nortia_in.orm.service.BeanFactoryServiceLocator" />
 
 	<!-- Domain class finder -->
-	<bean id="domainDirectoryImpl" class="es.nortia_in.orm.directory.InlineDomainDirectory">
-		<property name="domainClasses">
-			<list>
-				<value>examples.Author</value>
-				<value>examples.Book</value>
-			</list>
-		</property>
+	<bean id="domainDirectoryImpl" class="es.nortia_in.orm.directory.ClasspathDomainDirectory">
+		<property name="basePackage" value="examples"/> 
 	</bean>
-
 
 	<!-- Auto domain class register -->
 	<bean class="es.nortia_in.orm.spring.DomainClassRegisterPostProcessor">
@@ -92,7 +86,7 @@
 
 	<!-- Gorm-like class enhancer -->
 	<bean class="es.nortia_in.orm.spring.GormLikeEbeanPostProcessor">
-		<property name="serviceLocator" ref="serviceLocator" />
+<!-- 		<property name="serviceLocator" ref="serviceLocator" /> -->
 		<property name="domainDirectory" ref="domainDirectoryImpl" />
 	</bean>
 

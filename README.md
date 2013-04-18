@@ -62,3 +62,8 @@ Very quick and simple code examples are:
 			order("pages", "DESC")
 			maxResults(1)
 		}
+
+Documentation
+-------------
+
+* [Quick start](docs/SpringQuickStart.md) guide using Spring beans
