@@ -89,7 +89,7 @@ follow the steps:
 Example files
 -------------
 
-* Complete Spring Beans XML File. [test-context.xml](/examples/test-context.xml)
+* Complete Spring Beans XML File. [test-context.xml](src/test/resources/examples/test-context.xml)
 * Spring Application Context load [example](src/test/java/examples/ProgramaticallyLoadTest.groovy).
 * Several GORM [examples](src/test/java/examples/ExamplesTest.groovy).
 * Domain entities: [Book](src/test/java/examples/Book.groovy) and [Author](src/test/java/examples/Book.groovy) 
