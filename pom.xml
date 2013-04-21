@@ -26,6 +26,18 @@
 		<commons.logging.osgi.version>1.1.1</commons.logging.osgi.version>
 	</properties>
 
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/nortia/gorm4ebean</url>
+	</scm>
+
 	<dependencies>
 
 		<dependency>
@@ -51,7 +63,7 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>com.springsource.org.apache.commons.logging</artifactId>
@@ -73,12 +85,12 @@
 			<version>${spring.version}</version>
 		</dependency>
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.commons</groupId> -->
-<!-- 			<artifactId>com.springsource.org.apache.commons.dbcp</artifactId> -->
-<!-- 			<version>${commons.dbcp.version}</version> -->
-<!-- 			<scope>runtime</scope> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.apache.commons</groupId> -->
+		<!-- <artifactId>com.springsource.org.apache.commons.dbcp</artifactId> -->
+		<!-- <version>${commons.dbcp.version}</version> -->
+		<!-- <scope>runtime</scope> -->
+		<!-- </dependency> -->
 
 		<!-- Test dependencies -->
 
@@ -88,7 +100,7 @@
 			<version>${junit4.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.dbunit</groupId>
 			<artifactId>dbunit</artifactId>
@@ -144,13 +156,13 @@
 					<additionalBuildcommands>
 						<buildcommand>
 							org.springframework.ide.eclipse.core.springbuilder
-						</buildcommand>						            
-						<buildcommand>org.codehaus.groovy.eclipse.groovyBuilder						
-							</buildcommand>
+						</buildcommand>
+						<buildcommand>org.codehaus.groovy.eclipse.groovyBuilder
+						</buildcommand>
 					</additionalBuildcommands>
 					<sourceIncludes>
-			      <sourceInclude>**/*.groovy</sourceInclude>
-          </sourceIncludes>
+						<sourceInclude>**/*.groovy</sourceInclude>
+					</sourceIncludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -169,27 +181,27 @@
 						<version>2.6.0-01</version>
 					</dependency>
 				</dependencies>
-			</plugin>	
-<plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>${maven.enforcer.plugin.version}</version>
-        <executions>
-          <execution>
-            <id>enforce-java</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireJavaVersion>
-                  <version>1.7.0</version>
-                </requireJavaVersion>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>		
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>${maven.enforcer.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>enforce-java</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireJavaVersion>
+									<version>1.7.0</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
