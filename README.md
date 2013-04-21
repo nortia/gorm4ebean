@@ -66,8 +66,12 @@ Very quick and simple code examples are:
 Documentation
 -------------
 
-* [Quick start](docs/SpringQuickStart.md) guide using Spring beans
+* [Quick start](docs/SpringQuickStart.md) guide using Spring beans.
 
 * [Service injection](docs/ServiceInjection.md) into domain classes.
 
-* [Unsupported](docs/UsupportedGormFeatures.md) GORM 2.0 features
+* [Unsupported](docs/UnsupportedGormFeatures.md) GORM 2.0 features.
+
+* [Entity Lifecycle](docs/LifecycleCallbacks.md) callback methods.
+
+* [Persistence Unit](docs/MultiplePersistenceUnits.md) anntation.
