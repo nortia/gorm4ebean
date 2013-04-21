@@ -7,6 +7,8 @@ gorm4ebean enhances EBean entity domain classes with GORM-like methods such as s
 
 As original [Grails GORM](http://grails.org/doc/latest/guide/GORM.html), gorm4ebean uses [Spring Framework](http://www.springsource.org) and, of course, [Groovy](http://groovy.codehaus.org/)  and EBean ORM (with ebean-spring module).
 
+Download released jar file from [here](release/gorm4ebean-1.0.0.jar)
+
 Very quick and simple code examples are:
 ----------------------------------------
 
