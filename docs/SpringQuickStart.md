@@ -68,14 +68,9 @@ follow the steps:
 			<property name="basePackage" value="examples"/> [1](#callouts)
 		</bean>
 	
-		<!-- Auto domain class register -->
-		<bean class="es.nortia_in.orm.spring.DomainClassRegisterPostProcessor">
-			<property name="domainDirectory" ref="domainDirectoryImpl" />
-		</bean>
 	
 		<!-- Gorm-like class enhancer -->
 		<bean class="es.nortia_in.orm.spring.GormLikeEbeanPostProcessor">
-			<property name="domainDirectory" ref="domainDirectoryImpl" />
 		</bean>
 
 3. Load the Spring XML Context by using any of the several methods provided by Spring Framework.
