@@ -34,17 +34,16 @@ public class BasicPropertiesEnhancerTest {
 	void setUp() {
 		//Enable expando meta classes
 		ExpandoMetaClass.enableGlobally();
+	
+		//Clean metaclasses
+		domainDirectory.getDomainClasses().each {
+			ClassUtils.clearMetaClass(it)
+		}
 		
 		//Create the enhacer to be tested
 		enhancer = new BasicPropertiesEnhancer(domainDirectory:domainDirectory)
 	}
 	
-	@After
-	void tearDown() {
-		domainDirectory.getDomainClasses().each {
-			ClassUtils.clearMetaClass(it)
-		}
-	}
 	
 	@Test
 	void shouldEnhanceIdAndVersion() {
