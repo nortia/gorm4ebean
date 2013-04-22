@@ -130,6 +130,19 @@
 		</dependency>
 
 	</dependencies>
+	
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>gorm4ebean releases repo</name>
+			<url>http://10.200.3.13:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>gorm4ebean snapshots repo</name>
+			<url>http://10.200.3.13:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<build>
 		<plugins>
