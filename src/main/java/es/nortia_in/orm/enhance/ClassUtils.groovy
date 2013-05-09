@@ -96,4 +96,22 @@ class ClassUtils {
 
 		return result
 	}
+	
+	/**
+	 * Retrieve all generic interfaces from a given class. 
+	 * Return defined class interfaces and all superclasses generic interfaces as well.
+	 * @param clazz the class whose interfaces are requested
+	 * @return a collection with all generic interfaces
+	 */
+	static def getGenericInterfaces(Class clazz) {
+		assert clazz
+		def interfaces = [] as Set
+		while (clazz != Object) {
+			interfaces.addAll(clazz.getGenericInterfaces())
+			clazz = clazz.superclass
+		}
+		return interfaces
+		
+	}
+	
 }

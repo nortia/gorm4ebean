@@ -89,9 +89,9 @@ public class DomainClassRegisterPostProcessorTest {
 		assertEquals 0, listeners.size()
 		
 		
-		//Default server has 2 listeners
+		//Default server has 3 listeners
 		listeners = defaultServer.persistListeners
-		assertEquals 2, listeners.size()
+		assertEquals 3, listeners.size()
 		
 		//one of them is autowired persistListener
 		assertTrue persistListener in listeners

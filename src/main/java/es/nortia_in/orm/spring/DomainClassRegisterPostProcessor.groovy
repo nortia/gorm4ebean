@@ -15,12 +15,15 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanPostProcessor
 
+import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
+
 import com.avaje.ebean.config.ServerConfig
 import com.avaje.ebean.event.BeanPersistListener
 
 import es.nortia_in.orm.annotations.DomainAnnotationsProcessor
 import es.nortia_in.orm.annotations.TransientEntity
 import es.nortia_in.orm.directory.DomainDirectory
+import es.nortia_in.orm.enhance.ClassUtils
 
 /**
  * Post processor for discovering and registering domain classes inside EBean Server/s.
@@ -155,7 +158,8 @@ class DomainClassRegisterPostProcessor implements BeanPostProcessor, BeanFactory
 		def listeners = domainDirectory?.getPersistListeners()
 
 		listeners = listeners.findAll {
-			def interfaces = it.getGenericInterfaces()
+			def interfaces = ClassUtils.getGenericInterfaces(it)
+			 
 			return interfaces.find {iface ->
 
 				if (iface instanceof ParameterizedType) {
@@ -167,6 +171,12 @@ class DomainClassRegisterPostProcessor implements BeanPostProcessor, BeanFactory
 
 					//Register only the listeners attached to server registered entities
 					def arg = iface.getActualTypeArguments()[0] 
+					
+					//If interface type is a parameter and not a concrete class...search it inside class declaration
+					if (arg instanceof TypeVariableImpl) {
+						arg = it.getGenericSuperclass()?.getActualTypeArguments()[0];
+					}
+					
 					return arg in serverConfig.classes
 				}
 
