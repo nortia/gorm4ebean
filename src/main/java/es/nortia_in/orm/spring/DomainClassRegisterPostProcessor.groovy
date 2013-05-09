@@ -3,6 +3,7 @@ package es.nortia_in.orm.spring
 
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.TypeVariable
 
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanPostProcessor
 
-import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
 
 import com.avaje.ebean.config.ServerConfig
 import com.avaje.ebean.event.BeanPersistListener
@@ -173,7 +173,7 @@ class DomainClassRegisterPostProcessor implements BeanPostProcessor, BeanFactory
 					def arg = iface.getActualTypeArguments()[0] 
 					
 					//If interface type is a parameter and not a concrete class...search it inside class declaration
-					if (arg instanceof TypeVariableImpl) {
+					if (arg instanceof TypeVariable) {
 						arg = it.getGenericSuperclass()?.getActualTypeArguments()[0];
 					}
 					
