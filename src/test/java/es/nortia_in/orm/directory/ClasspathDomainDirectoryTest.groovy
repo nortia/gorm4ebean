@@ -56,8 +56,8 @@ public class ClasspathDomainDirectoryTest {
 		//Find persist listeners
 		def classes = domainDirectory.getPersistListeners()
 		
-		//There are only 2 listener
-		assertEquals 2, classes.size()
+		//There are only 3 listener
+		assertEquals 3, classes.size()
 	}
 	
 
