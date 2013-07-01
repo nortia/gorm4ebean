@@ -33,20 +33,20 @@ class GormLikeEnhancementsTest  extends AbstractDbUnitTransactionalJUnit4SpringC
 
 	@Test
 	void shouldDirectEnhanceClass() {
-		
+
 		assert postProcessor
-		
+
 		//Enhance a not defined in domain directory class
 		postProcessor.enhanceClass(EFamilia)
-		
+
 		def entity = new EFamilia()
-		
+
 		//Familia now has enhanced methods
 		assert entity.respondsTo("getId", [])
-		assert entity.respondsTo("save", []) 
-		
+		assert entity.respondsTo("save", [])
+
 	}
-	
+
 	@Test
 	void shouldFindMethod() {
 
@@ -153,10 +153,10 @@ class GormLikeEnhancementsTest  extends AbstractDbUnitTransactionalJUnit4SpringC
 
 		int beans = EAlmacen.count()
 		assertEquals 3, beans
-	
+
 		def bean = new EAlmacen(codigo_interno:"111111")
 		bean.save()
-			
+
 		assertEquals 4, EAlmacen.count()
 
 		//Before saved method should be executed
@@ -216,51 +216,63 @@ class GormLikeEnhancementsTest  extends AbstractDbUnitTransactionalJUnit4SpringC
 
 		assertEquals 1 , query.where().eq("codigo_interno", "00000222").findList().size()
 	}
-	
-	
+
+
 	@Test
 	void shouldDeleteEntity() {
-		
+
 		//Create almacen
 		def almacen = new EAlmacen(codigo_interno:"00000003")
 		almacen.save()
-		
+
 		//Find it
 		almacen = EAlmacen.get(almacen.id)
 		assert almacen
-		
+
 		//Delete it
 		almacen.delete()
-		
+
 		//Find it again
 		almacen = EAlmacen.get("00000003")
 		assert !almacen
-		
+
 	}
-	
+
 	@Test
 	void shouldNotFailAtDeleteNotInsertedYetEntity() {
-		
+
 		def entity = new EAlmacen(codigo_interno:"13345")
 		entity.delete()
-		
+
 		//Should not fail
 		assertNull EAlmacen.get(entity.id)
 	}
-	
+
 	@Test
 	void shouldCreateAndExecuteCriteria() {
-		
+
 		def criteria = EAlmacen.createCriteria()
-		
+
 		assertNotNull criteria
 		assertTrue criteria instanceof GormLikeCriteria
-		
-		def entity = criteria.get {
-			eq "codigo_interno", "00000222"
-		}
-		
+
+		def entity = criteria.get { eq "codigo_interno", "00000222" }
+
 		assertNotNull entity
 		assertEquals "00000222", entity.codigo_interno
+	}
+
+	@Test
+	void shouldRefreshBean() {
+		
+		def seccion = ESeccion.get(2)
+		assert seccion
+		
+		seccion.descripcion = "FOO"
+		assertEquals "FOO", seccion.descripcion
+		
+		seccion.refresh()
+		assertFalse "Object description should been refreshed", "FOO" == seccion.descripcion
+		
 	}
 }

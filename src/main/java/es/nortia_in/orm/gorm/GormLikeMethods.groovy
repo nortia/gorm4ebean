@@ -20,7 +20,7 @@ import es.nortia_in.orm.gorm.query.QueryDirectiveMapper
 class GormLikeMethods {
 
 	private static final Logger log = LoggerFactory.getLogger(GormLikeMethods)
-	
+
 	/**
 	 * List of dynamic method handlers
 	 */
@@ -40,6 +40,18 @@ class GormLikeMethods {
 
 		//Save
 		server.save(object)
+	}
+
+	/**
+	 * Gorm-like refresh() method implementation with ebeans api
+	 * @param object the object to refresh
+	 */
+	static void refresh(def server, def object) {
+		assert server != null
+		assert object != null
+
+		//Refresh
+		server.refresh(object)
 	}
 
 	/**
@@ -169,46 +181,46 @@ class GormLikeMethods {
 	 * @return true if object is a dirty entity, false otherwise
 	 */
 	static boolean isDirty(def object) {
-		
+
 		assert object
-		
+
 		//Not entities are ever dirties
 		if (!(object instanceof EntityBean)){
 			return true
 		}
-		
+
 		return object._ebean_getIntercept()?.isNewOrDirty()
 	}
-	
+
 	/**
-	* Gorm-like isDirty(String propertyName) method. Check if given entity's property is dirty
-	* @param object the object to be checked
-	* @param propertyName the property to be checked
-	* @return true if property is dirty, false otherwise
-	*/
-   static boolean isDirtyProperty(def object, String propertyName) {
-	   
-	   assert object
-	   return propertyName in getDirtyPropertyNames(object)
-   }
-	
+	 * Gorm-like isDirty(String propertyName) method. Check if given entity's property is dirty
+	 * @param object the object to be checked
+	 * @param propertyName the property to be checked
+	 * @return true if property is dirty, false otherwise
+	 */
+	static boolean isDirtyProperty(def object, String propertyName) {
+
+		assert object
+		return propertyName in getDirtyPropertyNames(object)
+	}
+
 	/**
 	 * Gorm-like getDirtyPropertyNames() method. Retrieve all entity updated properties
 	 * @param object the entity to be checked
 	 * @return the collection of dirty property names
 	 */
 	static Set<String> getDirtyPropertyNames(def object) {
-		
+
 		assert object
-		
+
 		if (!(object instanceof EntityBean)) {
 			return []
 		}
-		
+
 		return object._ebean_getIntercept()?.getChangedProps() ?: []
-		
+
 	}
-	
+
 	/**
 	 * Gorm-like getPersistentValue() method. Retrieve the persistent value of a given property.
 	 * @param object the entity whose persistent value should be recovered
@@ -216,18 +228,18 @@ class GormLikeMethods {
 	 * @return the property's persistent value
 	 */
 	static def getPersistentValue(def object, String propertyName) {
-		
+
 		assert object
-		
+
 		if (!propertyName) {
 			return null
 		}
-		
+
 		if (!(object instanceof EntityBean)) {
 			return null
 		}
-		
+
 		return object._ebean_getIntercept()?.getOldValues()?."$propertyName"
-		
+
 	}
 }

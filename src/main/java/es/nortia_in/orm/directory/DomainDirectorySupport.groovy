@@ -1,6 +1,7 @@
 package es.nortia_in.orm.directory
 
 import java.lang.annotation.Annotation
+import java.util.List
 import java.util.List;
 
 import javax.persistence.EmbeddedId;
