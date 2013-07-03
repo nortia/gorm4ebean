@@ -5,6 +5,8 @@ import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.Expression;
 import com.avaje.ebean.FetchConfig;
+import com.avaje.ebean.Junction;
+import com.avaje.ebeaninternal.server.expression.JunctionExpression;
 
 import es.nortia_in.orm.gorm.EBeanGormException;
 import groovy.util.logging.Slf4j;
@@ -17,7 +19,7 @@ import groovy.util.logging.Slf4j;
 @Slf4j
 class GormLikeCriteria {
 
-	
+
 	/**
 	 * Operation mapping. Maps each GORM operator with iths symbolic version
 	 */
@@ -34,11 +36,6 @@ class GormLikeCriteria {
 	Stack exprStack = []
 
 	/**
-	 * Currently active logical operator for expression joining
-	 */
-	def logicalOperator = LogicalOperators.AND
-
-	/**
 	 * The query to be created
 	 */
 	def query
@@ -47,11 +44,15 @@ class GormLikeCriteria {
 	 * The stack for object graph navigation
 	 */
 	Stack navigationPath = []
-	
+
 	/**
 	 * The EBean Server for query execution
 	 */
 	EbeanServer server;
+	
+	private Class disjunctionClass 
+	
+	private Class conjunctionClass
 
 	/**
 	 * 
@@ -59,10 +60,10 @@ class GormLikeCriteria {
 	 */
 	GormLikeCriteria(Class domainClass, EbeanServer server) {
 		super()
-				
+
 		assert domainClass
 		this.domainClass = domainClass
-		
+
 		assert server
 		this.server = server
 	}
@@ -88,9 +89,18 @@ class GormLikeCriteria {
 
 		assert query
 
+		//With empry stack there are no expressions to be added
+		if (exprStack.isEmpty()) {
+			return query
+		}
+
 		def q = query
-		def expr = exprStack.peek()
+		def expr = exprStack.pop()
 		if (expr) {
+			expr = waveExpression(expr)
+			if (!expr) {
+				return q
+			}
 			q = q.where(expr)
 		}
 
@@ -113,17 +123,27 @@ class GormLikeCriteria {
 			query = createQuery()
 		}
 
-		//Initialize stack
-		exprStack.push(null)
+		//Initialize classes
+		
+		
+		//Initialize stack. By default, every query is a big AND
+		def initialAndExpression = Expr.conjunction(query)
+		this.disjunctionClass = Expr.disjunction(query).getClass()
+		this.conjunctionClass = initialAndExpression.getClass()
+		
+		pushExpression(initialAndExpression)
 
 		//Execute the closure
 		closure.delegate = this
 		closure.call()
 
+		//Finalize stack
+		pushExpression(initialAndExpression)
+
 		return this
 
 	}
-	
+
 	/**
 	 * GORM-like listDistinct method
 	 * @param c the closure for criteria building
@@ -132,7 +152,7 @@ class GormLikeCriteria {
 	def listDistinct(Closure c) {
 		return list([distinct:true], c)
 	}
-	
+
 	/**
 	 * GORM like listDistinct method with sorting, ordering and limit mappings
 	 * @param args the sorting, ordering and limit mappings
@@ -147,7 +167,7 @@ class GormLikeCriteria {
 		args.distinct = true
 		list(args, c)
 	}
-	
+
 	/**
 	 * GORM-like method list. Retrieves all entities for criteria class
 	 * @return the entity list
@@ -173,19 +193,19 @@ class GormLikeCriteria {
 	 * @return the entity list
 	 */
 	def list(Map args, Closure c) {
-		
+
 		//Build the query
 		build(c)
-		
+
 		def q = applyExpressionsToQuery()
 
 		if (args) {
 			q = QueryDirectiveMapper.applyQueryDirectives(q, args)
 		}
-		
+
 		//Distinct
 		q.setDistinct(args.distinct ?: false)
-		
+
 		//If paginating are requested...
 		if (args.pageSize) {
 			return q.findPagingList(args.pageSize.asType(Integer))
@@ -212,9 +232,9 @@ class GormLikeCriteria {
 	def scroll(Map args, Closure c) {
 		throw new UnsupportedOperationException("Scrollable Result Sets not supported by eBean")
 	}
-	
-	
-	
+
+
+
 	/**
 	 * GORM-like get method. Returns a single one result
 	 * @param c the closure for criteria building
@@ -224,7 +244,7 @@ class GormLikeCriteria {
 
 		//Build the query
 		build(c)
-		
+
 		def q = applyExpressionsToQuery()
 		return q.findUnique()
 	}
@@ -237,7 +257,7 @@ class GormLikeCriteria {
 	protected def fetchMode(String path, FetchConfig mode){
 		query = query.fetch(path, mode)
 	}
-	
+
 	/**
 	 * Gorm-like join method. Tell a join over configured associated property 
 	 * @param path the association to be joined
@@ -245,7 +265,7 @@ class GormLikeCriteria {
 	protected def join(String path) {
 		query = query.fetch(path)
 	}
-	
+
 	/**
 	 * Gorm-like projections method. Projections are still not supported
 	 * @param c the builder closure
@@ -254,30 +274,52 @@ class GormLikeCriteria {
 	protected def projections(Closure c) {
 		throw new UnsupportedOperationException("Pojections feature not supported. Use eBean rawSql instead")
 	}
-	
-	
+
+
 	/**
-	 * Add new expression to expression set in construction
-	 * @param expression the expression to be added
+	 * Push the given expression into expressions queue
+	 * @param expression the expression to be pushed. 
 	 */
-	protected def addExpression(Expression expression) {
+	protected void pushExpression(def expression) {
 		assert expression
+		exprStack.push(expression)
+	}
 
+	/**
+	 * Wave the given expression with others in the expression queue to create a single composite expression that represents the whole queue
+	 * @return the composite expression
+	 */
+	protected Expression waveExpression(Expression expression) {
+		assert expression
+		return expression
+	}
+
+	/**
+	 * Wave the given expression with others in the expression queue to create a single composite expression that represents the whole queue
+	 * @return the composite expression
+	 */
+	protected Expression waveExpression(Junction expression) {
+		assert expression
+		
+		def op = (disjunctionClass.isInstance(expression)) ? "or" : "and"
 		def expr = exprStack.pop()
-
-		//Initialize expression if there are no expression constructed yet
-		if (!expr) {
-			expr = expression
+		def compositeExpression 
+		
+		//Lookup for next expression occurrence
+		while (expr != expression) {
+			//Wave the expression
+			expr = waveExpression(expr)
+			if (expr && compositeExpression) {
+				compositeExpression = Expr."$op"(compositeExpression, expr)
+			} else {
+				compositeExpression = expr
+			}
+			
+			expr = exprStack.pop()
 		}
-
-		//Join expression with operator
-		if (logicalOperator == LogicalOperators.OR) {
-			expr = Expr.or(expr, expression)
-		} else {
-			expr = Expr.and(expr, expression)
-		}
-
-		exprStack.push(expr)
+		
+		return compositeExpression
+		
 	}
 
 	/**
@@ -289,13 +331,13 @@ class GormLikeCriteria {
 		assert closure != null
 
 		//Change active operator
-		def operator = logicalOperator
-		logicalOperator = LogicalOperators.OR
-
+		def operator = Expr.disjunction(query)
+		pushExpression(operator)
+		
 		closure.call()
 
 		//Restore previous operator
-		logicalOperator = operator
+		pushExpression(operator)
 	}
 
 	/**
@@ -307,13 +349,13 @@ class GormLikeCriteria {
 		assert closure != null
 
 		//Change active operator
-		def operator = logicalOperator
-		logicalOperator = LogicalOperators.AND
+		def operator = Expr.conjunction(query)
+		pushExpression(operator)
 
 		closure.call()
 
 		//Restore previous operator
-		logicalOperator = operator
+		pushExpression(operator)
 
 	}
 
@@ -346,7 +388,7 @@ class GormLikeCriteria {
 		property1 = composeNavigationPath(property1)
 		property2 = composeNavigationPath(property2)
 
-		addExpression(Ebean.getExpressionFactory().betweenProperties(property1, property2, value))
+		pushExpression(Ebean.getExpressionFactory().betweenProperties(property1, property2, value))
 	}
 
 	/**
@@ -370,7 +412,7 @@ class GormLikeCriteria {
 	 * Expr class does not support idIn method, so a special mangement for this comparator should be ad hoc implemented in this class 
 	 */
 	protected def idIn(Object args) {
-		addExpression(Ebean.getExpressionFactory().idIn(args))
+		pushExpression(Ebean.getExpressionFactory().idIn(args))
 	}
 
 	/**
@@ -399,7 +441,7 @@ class GormLikeCriteria {
 	 * @param restriction the query restriction to be added
 	 */
 	protected def raw(String restriction) {
-		addExpression(Expr.raw(restriction))
+		pushExpression(Expr.raw(restriction))
 	}
 
 	/**
@@ -450,9 +492,6 @@ class GormLikeCriteria {
 	 */
 	protected def not(Closure c) {
 
-		//Push new level
-		exprStack.push(null)
-
 		//Execute inner
 		c.call()
 
@@ -461,7 +500,7 @@ class GormLikeCriteria {
 
 		//Not
 		if (expr) {
-			addExpression(Expr.not(expr))
+			pushExpression(Expr.not(expr))
 		}
 
 	}
@@ -479,7 +518,7 @@ class GormLikeCriteria {
 		//If comparator is not related to ID property...
 		if (comparator in ["idEq", "idIn"]) {
 			//..no property processing is required
-			addExpression(Expr."$comparator"(*args))
+			pushExpression(Expr."$comparator"(*args))
 			return
 		}
 
@@ -492,7 +531,7 @@ class GormLikeCriteria {
 		}
 
 		//Execute in query
-		addExpression(Expr."$comparator"(propertyName,  *argList))
+		pushExpression(Expr."$comparator"(propertyName,  *argList))
 	}
 
 	/**

@@ -4,7 +4,7 @@
   <e_seccion version="0" descripcion="00 - GRAN CONSUMO 2" seccion="2" />
   <e_seccion version="0" descripcion="00 - GRAN CONSUMO 3" seccion="3" />
   <e_almacen dtype="ALMACEN" version="0" seccion_seccion="2" abreviada="1881 VIRGEN B.00" descripcion="ACEITE OLIVA 1881 VIRGEN E.BOT.0.50" codigo_interno="00000002"/>
-  <e_almacen dtype="ALMACEN" version="0" seccion_seccion="2" abreviada="1881 VIRGEN B.00" descripcion="ACEITE GIRASOL 1881 VIRGEN E.BOT.0.50" codigo_interno="00000022"/>
+  <e_almacen dtype="ALMACEN" version="0" seccion_seccion="1" abreviada="1881 VIRGEN B.00" descripcion="ACEITE GIRASOL 1881 VIRGEN E.BOT.0.50" codigo_interno="00000022"/>
   <e_almacen dtype="ALMACEN" version="0" seccion_seccion="2" abreviada="1881 VIRGEN NULL"  codigo_interno="00000222"/>
   <e_familia dtype="FAMILIA" version="2012-12-01" familia="familia1"/>
   <e_familia dtype="FAMILIA" version="2012-11-30" familia="familia2"/>

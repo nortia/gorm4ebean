@@ -89,6 +89,26 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 	}
 
 	@Test
+	void shouldQueryDisjunctionNested3() {
+
+		ESeccion seccion = ESeccion.get(2)
+		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
+
+		def result = criteria.list{
+			eq "seccion", seccion
+			or {
+				contains "descripcion", "OLIVA"
+				eq "codigo_interno", "00000022"	
+			}
+			or {
+				contains "abreviada", "VIRGEN"
+				eq "codigo_interno", "00000022"
+			}			
+		}
+		assertEquals 1, result.size()
+	}
+	
+	@Test
 	void shouldQueryBetween() {
 
 		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
@@ -217,7 +237,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 		GormLikeCriteria criteria = new GormLikeCriteria(ESeccion, eorm)
 		
 		def result = criteria.list{ isNotEmpty "products" }
-		assertEquals 1, result.size()
+		assertEquals 2, result.size()
 
 
 	}
@@ -246,7 +266,7 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 		GormLikeCriteria criteria = new GormLikeCriteria(EAlmacen, eorm)
 		
 		def result = criteria.list { sqlRestriction "seccion.seccion = 2" }
-		assertEquals 3, result.size()
+		assertEquals 2, result.size()
 	}
 
 	@Test
@@ -346,4 +366,6 @@ class GormLikeCriteriaTest  extends AbstractDbUnitTransactionalJUnit4SpringConte
 		
 		//XXX Don't know how to assert eager loading
 	}
+	
+
 }
