@@ -173,7 +173,7 @@ class GormLikeEnhancementsTest  extends AbstractDbUnitTransactionalJUnit4SpringC
 		def products = seccion.products
 		assert products
 
-		assertEquals 3, products.size()
+		assertEquals 2, products.size()
 
 	}
 

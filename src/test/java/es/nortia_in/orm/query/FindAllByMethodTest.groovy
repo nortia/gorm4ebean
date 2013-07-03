@@ -122,6 +122,6 @@ class FindAllByMethodTest  extends AbstractDbUnitTransactionalJUnit4SpringContex
 		def found = findByMethod.execute(eorm, EAlmacen.class, "findAllBySeccion", [seccion])
 		assert found
 
-		assertEquals 3, found.size()
+		assertEquals 2, found.size()
 	}
 }

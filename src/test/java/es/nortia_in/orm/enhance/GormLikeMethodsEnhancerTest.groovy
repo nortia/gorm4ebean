@@ -211,7 +211,7 @@ class GormLikeMethodsEnhancerTest  extends AbstractDbUnitTransactionalJUnit4Spri
 		def products = seccion.products
 		assert products
 
-		assertEquals 3, products.size()
+		assertEquals 2, products.size()
 
 	}
 
