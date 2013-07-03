@@ -275,4 +275,18 @@ class GormLikeEnhancementsTest  extends AbstractDbUnitTransactionalJUnit4SpringC
 		assertFalse "Object description should been refreshed", "FOO" == seccion.descripcion
 		
 	}
+	
+	@Test
+	void shouldDoNothingRefreshingNotPersistentBean() {
+	
+		def seccion = new ESeccion(descripcion:"FOO")
+		assert seccion
+		
+		seccion.descripcion = "FOO"
+		assertEquals "FOO", seccion.descripcion
+		
+		seccion.refresh()
+		assertTrue "Object description should not been refreshed", "FOO" == seccion.descripcion
+			
+	}
 }

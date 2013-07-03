@@ -50,8 +50,10 @@ class GormLikeMethods {
 		assert server != null
 		assert object != null
 
-		//Refresh
-		server.refresh(object)
+		//Refresh. Only if bean is entity bean. (is not vanilla)
+		if (object instanceof EntityBean) {
+			server.refresh(object)
+		}
 	}
 
 	/**
