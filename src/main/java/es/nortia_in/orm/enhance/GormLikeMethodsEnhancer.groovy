@@ -139,6 +139,24 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 	}
 
 	/**
+	 * Template method to execute isSynch() Gorm-like method over given entity
+	 * @param object the entity to be checked
+	 * @return true if entity is synch with database, false otherwise
+	 */
+	protected boolean doIsSynch(Object object) {
+		return GormLikeMethods.isSynch(object)
+	}
+	
+	/**
+	* Template method to execute isNew() Gorm-like method over given entity
+	* @param object the entity to be checked
+	* @return true if entity is new and not persisted yet, false otherwise
+	*/
+   protected boolean doIsNew(Object object) {
+	   return GormLikeMethods.isNew(object)
+   }
+
+	/**
 	 * Template method to execute getDirtyPropertyNames() GORM-like method over given entity
 	 * @param object the entity to be checked
 	 * @return the dirty properties collection
@@ -238,6 +256,8 @@ class GormLikeMethodsEnhancer implements DomainClassEnhancer{
 		metaClass.isDirty = {prop->
 			doIsDirty(delegate, prop)
 		}
+		metaClass.isSynch = { doIsSynch(delegate) }
+		metaClass.isNew = { doIsNew(delegate) }
 
 		//getDirtyPropertyNames
 		metaClass.getDirtyPropertyNames = { doGetDirtyPropertyNames(delegate) }

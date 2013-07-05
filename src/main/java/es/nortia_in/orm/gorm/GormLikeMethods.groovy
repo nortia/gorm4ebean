@@ -51,9 +51,16 @@ class GormLikeMethods {
 		assert object != null
 
 		//Refresh. Only if bean is entity bean. (is not vanilla)
-		if (object instanceof EntityBean) {
-			server.refresh(object)
+		if (!(object instanceof EntityBean)){
+			return
 		}
+
+		//Do not refresh new objects
+		if (object._ebean_getIntercept()?.isNew()) {
+			return
+		}
+
+		server.refresh(object)
 	}
 
 	/**
@@ -193,6 +200,32 @@ class GormLikeMethods {
 
 		return object._ebean_getIntercept()?.isNewOrDirty()
 	}
+
+	/**
+	 * Gorm-like isSynch() method. Check if given entity has not pending changes to database. 
+	 * @param object the object to be checked
+	 * @return true if object is a dirty entity, false otherwise
+	 */
+	static boolean isSynch(def object) {
+		return !isDirty(object)
+	}
+
+	/**
+	 * Gorm-like isNew() method. Check if given entity has not been persisted to database
+	 * @param object the object to be checked
+	 * @return true if object is a new entity, false otherwise
+	 */
+	static boolean isNew(def object) {
+		assert object
+
+		//Not entities are ever dirties
+		if (!(object instanceof EntityBean)){
+			return true
+		}
+
+		return object._ebean_getIntercept()?.isNew()
+	}
+
 
 	/**
 	 * Gorm-like isDirty(String propertyName) method. Check if given entity's property is dirty
