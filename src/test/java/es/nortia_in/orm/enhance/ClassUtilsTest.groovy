@@ -1,11 +1,12 @@
 package es.nortia_in.orm.enhance;
 
+import java.lang.reflect.Field
+
+import org.codehaus.groovy.classgen.Verifier;
 import org.junit.Test;
 import static org.junit.Assert.*
 
 class ClassUtilsTest {
-
-
 
 
 	@Test
@@ -32,5 +33,7 @@ class ClassUtilsTest {
 
 
 }
+
+
 
 

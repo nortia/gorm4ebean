@@ -52,8 +52,8 @@
 		<property name="namingConvention">
 			<bean class="com.avaje.ebean.config.UnderscoreNamingConvention" />
 		</property>
-
-
+		
+		<property name="packages" value="no.package"/>
 	</bean>
 
 	<bean id="serverConfig" parent="defaultEbeanServerConfig">

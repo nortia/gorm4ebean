@@ -140,7 +140,7 @@ class GormLikeEbeanPostProcessor implements BeanPostProcessor, ApplicationContex
 		
 		//Enhance all classes with basic enhancers
 		(entities+embeddables).each {clazz ->
-		
+			
 			//Enhance meta class
 			def mc = ClassUtils.getExpandoMetaClass(clazz)
 			assert mc

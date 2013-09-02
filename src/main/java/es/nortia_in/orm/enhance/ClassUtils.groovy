@@ -2,6 +2,7 @@ package es.nortia_in.orm.enhance
 
 import groovy.lang.MetaClass;
 
+import org.codehaus.groovy.classgen.Verifier
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory
 
@@ -35,7 +36,9 @@ class ClassUtils {
 	 * @return expando meta class ready to enhance
 	 */
 	static MetaClass getExpandoMetaClass(Class clazz) {
-
+		
+		ensureClassIntialization(clazz)
+		
 		MetaClassRegistry registry = GroovySystem.getMetaClassRegistry();
 		assert (registry.getMetaClassCreationHandler() instanceof ExpandoMetaClassCreationHandle) : "Openfidelia requires an instance of [ExpandoMetaClassCreationHandle] to be set in Groovy's MetaClassRegistry!";
 		MetaClass mc = registry.getMetaClass(clazz);
@@ -55,6 +58,18 @@ class ClassUtils {
 		}
 		assert (mc instanceof ExpandoMetaClass) : "BUG! Method must return an instance of [ExpandoMetaClass]!";
 		return mc;
+	}
+	
+	/**
+	 * Ensure that any clint blocks are called before class registration. If do not so, clint will fail due to class InitializationException.
+	 * To force clint calling, this method only have to request any class property. I.e: <class>Verifier.STATIC_METACLASS_BOOL</class> 
+	 * @param clazz the class to be initialized
+	 */
+	private static void ensureClassIntialization(Class clazz) {
+		try {
+			clazz."$Verifier.STATIC_METACLASS_BOOL"
+		} catch (MissingPropertyException e) {
+		}
 	}
 	
 	/**
